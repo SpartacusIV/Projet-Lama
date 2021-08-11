@@ -1,0 +1,16 @@
+import pandas as pd
+import numpy as np
+import xlsxwriter
+from openpyxl import load_workbook
+import matplotlib.pyplot as plt
+
+Files = 'C:/Users/alvad/Desktop/Projet Lama/Base de données/arret2019.xlsx'
+path = 'C:/Users/alvad/Desktop/Projet Lama/Base de données'
+df = pd.read_excel(Files)
+# NE PAS TOUCHER
+
+
+dfAdresses = pd.read_csv('')
+xlwritter = pd.ExcelWriter('Files')
+xlsxwriter = pd.ExcelWriter('DF2.xlsx')
+xlsxwriter.close()
