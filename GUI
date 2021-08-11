@@ -1,0 +1,16 @@
+
+from tkinter import *
+from tkinter import filedialog
+
+window = Tk()
+window.withdraw()
+filepath = filedialog.askopenfilename(initialdir="C:\\Users\\",
+                                          title="Selectionner le fichier excel",
+                                          filetypes= (("text files","*.xlsx"),
+                                          ("all files","*.*")))
+file = open(filepath,'r')
+print(filepath)
+
+
+
+
