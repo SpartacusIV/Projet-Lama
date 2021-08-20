@@ -1,15 +1,37 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
 
-from tkinter import *
-from tkinter import filedialog
+from openpyxl import workbook,load_workbook
 
-window = Tk()
-window.withdraw()
-filepath = filedialog.askopenfilename(initialdir="C:\\Users\\",
-                                          title="Selectionner le fichier excel",
-                                          filetypes= (("text files","*.xlsx"),
-                                          ("all files","*.*")))
-file = open(filepath,'r')
-print(filepath)
+Files = 'C:/Users/alvad/Desktop/Projet Lama/Base de données/modified.xlsx'
+wb = load_workbook(filename=Files)
+df = pd.read_excel(Files)
+df["Durée de l'arrêt"]=pd.to_numeric(df["Durée de l'arrêt"].replace(r"\s+",'',regex=True),errors='coerce')
+x = df["Durée de l'arrêt"] > 243
+column_name = "Durée de l'arrêt"
+df.loc[x, column_name] = 243
+yolo = df.groupby(['Année'])["Durée de l'arrêt"].agg('sum')
+yoloo = df.groupby(['Mois'])["Durée de l'arrêt"].agg('sum')
+yolo1 = df.groupby(['Année'])["Age"].agg('mean')
+yolo2 = df.groupby(['Année']).agg({"Justification": pd.Series.unique})
+yolo3 = (yolo*(100/29280))
+
+yolo3.plot.hist(grid=True, bins=20, rwidth=0.9,
+                   color='#607c8e')
+plt.show()
+print(yoloo)
+print(yolo3)
+print(yolo1)
+print(yolo2)
+
+
+
+
+
+
+
+
 
 
 
