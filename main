@@ -2,15 +2,20 @@ import pandas as pd
 from openpyxl import workbook
 import xlsxwriter
 import datetime as DT
+from tkinter import *
+from tkinter import filedialog
 import numpy as np
 from openpyxl import workbook,load_workbook
 
-Files = 'C:/Users/alvad/Desktop/Projet Lama/Base de données/abs.xlsx'
-Files_m = 'C:/Users/alvad/Desktop/Projet Lama/Base de données/modified.xlsx'
 
+Files = 'C:\\Users\\Louis\\Documents\\abs.xlsx'
+
+Files_m = 'modified.xlsx'
 # Create an new Excel file and add a worksheet.
 
 def merge():
+    print('yolo')
+    print(Files)
     df = pd.read_excel(Files)
     wb = load_workbook(filename=Files)
     x = 0
@@ -74,12 +79,8 @@ def date():
 
 
     lo = pd.DataFrame(df)
-    lo.to_excel('C:/Users/alvad/Desktop/Projet Lama/Base de données/modified.xlsx')
+    lo.to_excel('modified.xlsx')
     modifi()
-
-
-
-
 
 def modifi():
     df = pd.read_excel(Files_m)
@@ -88,22 +89,59 @@ def modifi():
                        ,"Date début arret","Jour","Mois","Année","Date fin arret",'Justification',])\
         .agg({"Durée de l'arrêt": pd.Series.unique})
     lo = pd.DataFrame(d)
-    lo.to_excel('C:/Users/alvad/Desktop/Projet Lama/Base de données/modified.xlsx')
+    lo.to_excel('modified.xlsx',sheet_name='Base de donnée')
+    new_sheet()
+
+
+def new_sheet():
+    df = pd.read_excel('modified.xlsx')
+    book = load_workbook('modified.xlsx')
+    writer = pd.ExcelWriter('modified.xlsx', engine='openpyxl')
+    writer.book = book
+
+    df["Durée de l'arrêt"] = pd.to_numeric(df["Durée de l'arrêt"].replace(r"\s+", '', regex=True), errors='coerce')
+    x = df["Durée de l'arrêt"] > 243
+    column_name = "Durée de l'arrêt"
+    df.loc[x, column_name] = 243
+    yolo = df.groupby(['Année'])["Durée de l'arrêt"].agg('sum')
+    yolo3 = (yolo * (100 / 29280))
+    df3 = pd.DataFrame(yolo3)
+    df3.columns = ["Taux absentéisme"]
+    df3["Taux absentéisme"] = np.round(df3["Taux absentéisme"],decimals = 2)
+    df3["Taux absentéisme"] = df3["Taux absentéisme"].astype(str) + '%'
+
+
+    yolo4 = df.groupby(['Année'])['Age'].agg('mean')
+    df4 = pd.DataFrame(yolo4)
+    df4["Age moyen"] = np.round(df4["Age"], decimals=0)
+    df4.pop('Age')
 
 
 
-def traduction():
-    df = pd.read_excel(Files)
-    wb = load_workbook(filename=Files_m)
-    writer = pd.ExcelWriter(Files_m)
-    df.to_excel(writer, sheet_name='sheet1', index=False, na_rep='NaN')
-    for column in df:
-        column_width = max(df[column].astype(str).map(len).max(), len(column))
-        col_idx = df.columns.get_loc(column)
-        writer.sheets['sheet1'].set_column(col_idx, col_idx, column_width)
 
+    yolo6 = df.groupby(['Service'])["Durée de l'arrêt"].agg('mean')
+    df6 = pd.DataFrame(yolo6)
+    df6["Durée arrêt moyen"] = np.round(df6["Durée de l'arrêt"], decimals=0)
+    df6.pop("Durée de l'arrêt")
+
+    yolo7 = df.groupby(['Service'])["Age"].agg('mean')
+    df7 = pd.DataFrame(yolo7)
+    df7["Age moyen"] = np.round(df7["Age"], decimals=0)
+    df7.pop('Age')
+
+
+
+
+
+    ret = pd.concat([df3, df4,df6,df7], axis=1)
+    ret.to_excel(writer, sheet_name='Calcul')
     writer.save()
-date()
+
+
+
+
+
+merge()
 
 
 
